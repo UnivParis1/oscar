@@ -1,0 +1,4 @@
+module:
+  id: missing
+  name: Missing module
+  config:

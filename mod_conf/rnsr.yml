@@ -1,0 +1,4 @@
+module:
+  id: rnsr
+  name: Répertoire national des structures de recherche
+  config:

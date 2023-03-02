@@ -1,0 +1,4 @@
+module:
+  id: dummy
+  name: Dummy module
+  config:
