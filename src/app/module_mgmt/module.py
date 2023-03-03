@@ -9,6 +9,7 @@ from app.data.entity_factory import EntityFactory
 class Module(abc.ABC):
     identifier: str
     name: str
+    config: dict[str, str]
 
     @abc.abstractmethod
     def entity(self, entity_type: str, field: str, value: str) -> dict:
