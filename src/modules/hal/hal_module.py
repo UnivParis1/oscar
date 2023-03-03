@@ -4,6 +4,7 @@ from typing import Iterator
 import requests
 import pandas as pd
 
+from app.module_mgmt.exceptions import EntityNotFoundError, DuplicateEntitiesError
 from app.module_mgmt.module import Module
 
 
@@ -56,19 +57,19 @@ class HalModule(Module):
         return pd.DataFrame(json_data['response']['docs'])
 
     def _extract_by_field(self, origin, column, acronym):
-        result_row = None
-        datatype = type(self.aurehal_data[column].dropna().values[0])
+        filtered_data = pd.DataFrame.copy(self.aurehal_data)
+        datatype = type(filtered_data[column].dropna().values[0])
         if datatype == list:
-            self.aurehal_data = self.aurehal_data.loc[
-                self.aurehal_data[column].str.join(' ').str.contains(f"^{acronym}$", regex=True, na=False)]
+            filtered_data = filtered_data.loc[
+                filtered_data[column].str.join(' ').str.contains(f"^{acronym}$", regex=True, na=False)]
         else:
-            self.aurehal_data = self.aurehal_data.loc[
-                self.aurehal_data[column].str.contains(f"^{acronym}$", regex=True, na=False, flags=re.IGNORECASE)]
-        if self.aurehal_data.shape[0] == 0:
-            print(f"## Non trouvé {origin} : {acronym}")
-        elif self.aurehal_data.shape[0] > 1:
-            acronyms = ", ".join(self.aurehal_data[column])
-            print(f"## Résultats multiples {origin} : {acronyms}")
+            filtered_data = filtered_data.loc[
+                filtered_data[column].str.contains(f"^{acronym}$", regex=True, na=False, flags=re.IGNORECASE)]
+        if filtered_data.shape[0] == 0:
+            raise EntityNotFoundError("Non trouvé {origin} : {acronym}")
+        if filtered_data.shape[0] > 1:
+            acronyms = ", ".join(filtered_data[column])
+            raise DuplicateEntitiesError(f"Résultats multiples {origin} : {acronyms}")
         else:
-            result_row = self.aurehal_data.iloc(0)[0]
+            result_row = filtered_data.iloc(0)[0]
         return result_row

@@ -12,7 +12,7 @@ class Module(abc.ABC):
 
     @abc.abstractmethod
     def entity(self, entity_type: str, field: str, value: str) -> dict:
-        return EntityFactory.build_entity(entity_type, field, value, self.identifier)()
+        return EntityFactory.entity_class(entity_type, field, value, self.identifier)()
 
     @abc.abstractmethod
     def values_for(self, entity_type: str, field: str) -> Iterator[str]:

@@ -36,9 +36,9 @@ class ModuleManager:
 
         def __next__(self):
             filename = next(self.file_iterator)
-            f = os.path.join(self.manager.conf_dir, filename)
-            with open(f, "rb", encoding="utf-8") as yaml_file:
-                self.success_log_fn(f"\u2192 Fichier d'initialisation découvert : {f}")
+            file = os.path.join(self.manager.conf_dir, filename)
+            with open(file, encoding="utf-8") as yaml_file:
+                self.success_log_fn(f"\u2192 Fichier d'initialisation découvert : {file}")
                 data = yaml.load(yaml_file, Loader=SafeLoader)
                 module = ModuleFactory.build(data['module'])
                 self.manager.modules[module.identifier] = module

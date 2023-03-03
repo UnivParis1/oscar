@@ -5,7 +5,7 @@ from dataclasses import dataclass, make_dataclass, field
 class EntityFactory:
 
     @classmethod
-    def build_entity(cls, entity_type, prefilled_field: str, prefilled_value: str, source: str):
+    def entity_class(cls, entity_type, prefilled_field: str = None, prefilled_value: str = None, source: str = None):
         if entity_type == 'structure':
             return make_dataclass('Structure', [
                 ('source', str, field(default=source)),
@@ -17,5 +17,10 @@ class EntityFactory:
                 ('rnsr_id', str, field(default=prefilled_value if prefilled_field == 'code' else None)),
                 ('url', str, field(default=None)),
                 ('number', str, field(default=prefilled_value if prefilled_field == 'number' else None)),
+            ], unsafe_hash=True)
+        elif entity_type == 'error':
+            return make_dataclass('Error', [
+                ('source', str, field(default=source)),
+                ('message', str, field(default=prefilled_value if prefilled_field == 'message' else None)),
             ], unsafe_hash=True)
         raise ValueError(f"Entity type {entity_type} not supported yet")
