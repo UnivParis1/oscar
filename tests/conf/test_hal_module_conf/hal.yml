@@ -1,0 +1,4 @@
+module:
+  id: hal
+  name: Référentiel HAL
+  config:

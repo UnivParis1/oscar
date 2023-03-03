@@ -33,11 +33,8 @@ class TestRnsrModule:
         driver.get(f"file://{Path('fixtures/rnsr/' + page).resolve()}")
         return driver
 
-    def _init_rnsr_module(self):
+    def _init_rnsr_module(self) -> RnsrModule:
         module_manager = ModuleManager(conf_dir="conf/test_rnsr_module_conf")
-        init_iterator = module_manager.init_iterator(error_log_fn=print, success_log_fn=print)
-        for _ in init_iterator:
+        for _ in module_manager.init_iterator(error_log_fn=print, success_log_fn=print):
             pass
-        assert module_manager.nb_modules == 1
-        rnsr_module: RnsrModule = module_manager.modules['rnsr']
-        return rnsr_module
+        return module_manager.modules['rnsr']

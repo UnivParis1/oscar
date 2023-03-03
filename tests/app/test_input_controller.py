@@ -10,7 +10,7 @@ class TestInputController:
 
     @patch.object(PromptOutputHandler, 'output')
     def test_input_controller_return(self, mock: MagicMock):
-        module_manager = ModuleManager(conf_dir="tests_dummy_mod_conf")
+        module_manager = ModuleManager(conf_dir="conf/tests_dummy_mod_conf")
         data_service = DataService(module_manager=module_manager)
         controller = InputController(data_service=data_service, output_handler=PromptOutputHandler(),
                                      error_logger=print, info_logger=print, success_logger=print)
