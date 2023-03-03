@@ -2,7 +2,7 @@ from app.data.data_service import DataService
 from app.module_mgmt.module_manager import ModuleManager
 
 
-class TestInputController:
+class TestDataService:
 
     def test_data_service_return(self):
         module_manager = ModuleManager(conf_dir="conf/tests_dummy_mod_conf")
