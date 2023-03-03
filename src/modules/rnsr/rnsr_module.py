@@ -12,22 +12,20 @@ from bleach.sanitizer import Cleaner
 from app.module_mgmt.exceptions import EntityNotFoundError
 from app.module_mgmt.module import Module
 
-SEARCH_FORM_URL = 'https://appliweb.dgri.education.fr/rnsr/ChoixCriteres.jsp?PUBLIC=OK'
-
 
 class RnsrModule(Module):
+    rnsr_directors_regex = re.compile(r'^\s*Directeur - (.+) à partir du .+ \( (.+@.+) \)<br>\s*$')
+    rnsr_title_regex = re.compile(r'^([A-Z0-9]+)\s*:\s*(.+)$')
+    rnsr_intitule_regex = re.compile(r'^\s*([A-Z0-9a-z]+\s)?([A-Z].+)\s*$')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        assert 'search_form_url' in self.config
         self.cleaner = Cleaner(tags=[], attributes={}, protocols=[], strip=True, strip_comments=True,
                                filters=None)
 
     def values_for(self, entity_type: str, field: str) -> Iterator[str]:
         pass
-
-    rnsr_directors_regex = re.compile(r'^\s*Directeur - (.+) à partir du .+ \( (.+@.+) \)<br>\s*$')
-    rnsr_title_regex = re.compile(r'^([A-Z0-9]+)\s*:\s*(.+)$')
-    rnsr_intitule_regex = re.compile(r'^\s*([A-Z0-9a-z]+\s)?([A-Z].+)\s*$')
 
     def entity(self, entity_type: str, field: str, value: str) -> object:
         assert field in ['acronym', 'code', 'number', 'title']
@@ -40,18 +38,22 @@ class RnsrModule(Module):
         return entity
 
     def _get_research_structure_data(self, rnsr_code=None, acronym=None):
-        driver = self._get_web_driver()
-        driver.get(SEARCH_FORM_URL)
-        self._execute_query(driver, acronym, rnsr_code)
-        acronym, number, title = self._extract_title_and_identifiers(acronym, driver)
-        director, director_email = self._extract_directors(driver)
-        address = self._extract_address(driver)
+        result_page = self._get_entity_result_page(acronym, rnsr_code)
+        acronym, number, title = self._extract_title_and_identifiers(acronym, result_page)
+        director, director_email = self._extract_directors(result_page)
+        address = self._extract_address(result_page)
         return {'director': director,
                 'director_email': director_email,
                 'title': title,
                 'acronym': acronym,
                 'rnsr_id': number,
                 'address': address}
+
+    def _get_entity_result_page(self, acronym, rnsr_code):
+        driver = self._get_web_driver()
+        driver.get(self.config['search_form_url'])
+        self._execute_query(driver, acronym, rnsr_code)
+        return driver
 
     def _extract_address(self, driver):
         try:
@@ -85,8 +87,8 @@ class RnsrModule(Module):
     def _extract_title_and_identifiers(self, acronym, driver):
         try:
             title = driver.find_element(By.XPATH, '//h2').text.split('\n')[0]
-        except selenium.common.exceptions.NoSuchElementException:
-            raise EntityNotFoundError(f"Non trouvé RNSR : {acronym}")
+        except selenium.common.exceptions.NoSuchElementException as exc:
+            raise EntityNotFoundError(f"Non trouvé RNSR : {acronym}") from exc
         match_title = self.rnsr_title_regex.match(title)
         num = None if match_title is None else match_title.group(1)
         name = None if match_title is None else match_title.group(2)

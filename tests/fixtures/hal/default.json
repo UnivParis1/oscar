@@ -1,0 +1,48 @@
+[
+  {
+    "docid": "123745",
+    "idref_s": [
+      "150030185"
+    ],
+    "rnsr_s": [
+      "199814014W"
+    ],
+    "label_s": "Centre d'étude des techniques, des connaissances et des pratiques [CETCOPRA]",
+    "name_s": "Centre d'étude des techniques, des connaissances et des pratiques",
+    "acronym_s": "CETCOPRA",
+    "address_s": "17, rue de la Sorbonne 75005 Paris",
+    "url_s": "http://cetcopra.univ-paris1.fr/",
+    "type_s": "laboratory",
+    "valid_s": "VALID",
+    "updateDate_s": "2022-07-06 12:26:09",
+    "code_s": [
+      "EA2483"
+    ],
+    "parentAcronym_s": [
+      "UP1"
+    ]
+  },
+  {
+    "docid": "74131",
+    "idref_s": [
+      "194685314"
+    ],
+    "rnsr_s": [
+      "199213454N"
+    ],
+    "label_s": "Centre de Recherche en Informatique de Paris 1 [CRI]",
+    "name_s": "Centre de Recherche en Informatique de Paris 1",
+    "acronym_s": "CRI",
+    "address_s": "Université Paris 1 Panthéon-Sorbonne 90 rue de Tolbiac 75013 Paris Pays FR",
+    "url_s": "https://cri.pantheonsorbonne.fr/",
+    "type_s": "laboratory",
+    "valid_s": "VALID",
+    "updateDate_s": "2022-03-14 15:54:19",
+    "code_s": [
+      "EA1445"
+    ],
+    "parentAcronym_s": [
+      "UP1"
+    ]
+  }
+]
