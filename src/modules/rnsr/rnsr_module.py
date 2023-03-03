@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from bleach.sanitizer import Cleaner
 
+from app.module_mgmt.exceptions import EntityNotFoundError
 from app.module_mgmt.module import Module
 
 SEARCH_FORM_URL = 'https://appliweb.dgri.education.fr/rnsr/ChoixCriteres.jsp?PUBLIC=OK'
@@ -63,7 +64,6 @@ class RnsrModule(Module):
             address = re.sub(r'(\s+|&nbsp;)', ' ', raw)
         except selenium.common.exceptions.NoSuchElementException:
             address = None
-            print("Adresse non trouvée RNSR")
         return address
 
     def _extract_directors(self, driver):
@@ -80,14 +80,13 @@ class RnsrModule(Module):
         except selenium.common.exceptions.NoSuchElementException:
             director = None
             director_email = None
-            print("Responsables non trouvés RNSR")
         return director, director_email
 
     def _extract_title_and_identifiers(self, acronym, driver):
         try:
             title = driver.find_element(By.XPATH, '//h2').text.split('\n')[0]
         except selenium.common.exceptions.NoSuchElementException:
-            print("## Non trouvé RNSR ")
+            raise EntityNotFoundError(f"Non trouvé RNSR : {acronym}")
         match_title = self.rnsr_title_regex.match(title)
         num = None if match_title is None else match_title.group(1)
         name = None if match_title is None else match_title.group(2)

@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from app.data.entity_factory import EntityFactory
+from app.module_mgmt.exceptions import EntityNotFoundError, DuplicateEntitiesError
 from app.module_mgmt.module_manager import ModuleManager
 
 
@@ -14,5 +16,8 @@ class DataService:
 
     def entities(self, entity_type, field, value):
         modules = self.module_manager.modules
-        return (modules[module].entity(entity_type=entity_type, field=field, value=value)
-                for module in iter(modules))
+        for module in iter(modules):
+            try:
+                yield modules[module].entity(entity_type=entity_type, field=field, value=value)
+            except (EntityNotFoundError, DuplicateEntitiesError) as error:
+                yield EntityFactory.entity_class("error", "message", str(error), module)()

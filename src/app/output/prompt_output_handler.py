@@ -9,18 +9,24 @@ from app.output.output_handler import OutputHandler
 
 
 class PromptOutputHandler(OutputHandler):
-    def format(self, entity_type: str, field: str, value: str, entities_gen: Generator[object, None, None], nb_modules: int):
+    def output(self, entities_gen: Generator[object, None, None]):
+        assert self.base_class is not None, "Configure output with 'set_mode' before sending entities"
         entities = {}
         with ProgressBar(title="Interrogation des sources") as pb:
-            for _ in pb(range(nb_modules), label="Initialisation"):
-                entity = next(entities_gen)
-                pb.title = entity.source
-                entities[entity.source] = entity
-        object_class = type(list(entities.values())[0])
-        for field in dataclasses.fields(object_class):
-            if field.name in ['source']:
+            for _ in pb(range(self.expected_modules_count), label="Initialisation"):
+                source = next(entities_gen)
+                pb.title = source.source
+                entities[source.source] = source
+                if self._error_entity(source):
+                    print_formatted_text(HTML(f"<b><red>Source : {source.source} Erreur : {source.message}</red></b>"))
+        for search_field in dataclasses.fields(self.base_class):
+            if search_field.name in ['source']:
                 continue
-            print_formatted_text(HTML(f"<b><green>Champ : {LabelTable.FIELDS[field.name]}</green></b><br/>"))
-            for entity in entities:
-                print_formatted_text(
-                    HTML(f"<li><green>{entity} : {getattr(entities[entity], field.name)}</green></li>"))
+            print_formatted_text(HTML(f"<b><green>Champ : {LabelTable.FIELDS[search_field.name]}</green></b><br/>"))
+            for source in entities:
+                entity = entities[source]
+                if self._error_entity(entity):
+                    print_formatted_text(HTML(f"<b><red>Source : {source} Erreur : {entity.message}</red></b>"))
+                else:
+                    print_formatted_text(
+                        HTML(f"<green>{source} : {getattr(entity, search_field.name)}</green>"))
