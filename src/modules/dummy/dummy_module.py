@@ -3,7 +3,7 @@ from typing import Iterator
 from app.module_mgmt.module import Module
 
 
-class Module(Module):
+class DummyModule(Module):
     def values_for(self, entity_type: str, field: str) -> Iterator[str]:
         pass
 

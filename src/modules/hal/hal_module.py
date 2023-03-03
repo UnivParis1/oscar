@@ -1,13 +1,15 @@
 import re
 from typing import Iterator
 
-import requests as requests
+import requests
 import pandas as pd
 
 from app.module_mgmt.module import Module
 
 
-class Module(Module):
+class HalModule(Module):
+    HAL_QUERY_TIMEOUT = 60
+
     HAL_FIELDS = ['docid', 'type_s', 'acronym_s', 'parentAcronym_s', 'address_s', 'name_s', 'label_s', 'valid_s',
                   'code_s',
                   'rnsr_s', 'idref_s', 'code_s', 'updateDate_s', 'url_s']
@@ -43,14 +45,14 @@ class Module(Module):
             hal_field_name = "rnsr_s"
         data = self._extract_by_field("HAL", hal_field_name, value)
         for key in data.index:
-            if key not in self.CONVERSION_TABLE.keys():
+            if key not in self.CONVERSION_TABLE:
                 continue
-            val = data[key][0] if type(data[key]) is list and len(data[key]) > 0 else data[key]
+            val = data[key][0] if isinstance(data[key], list) and len(data[key]) > 0 else data[key]
             setattr(entity, self.CONVERSION_TABLE[key], val)
         return entity
 
     def _get_hal_research_structures(self):
-        json_data = requests.get(self.HAL_QUERY).json()
+        json_data = requests.get(self.HAL_QUERY, timeout=self.HAL_QUERY_TIMEOUT).json()
         return pd.DataFrame(json_data['response']['docs'])
 
     def _extract_by_field(self, origin, column, acronym):

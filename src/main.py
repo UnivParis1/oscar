@@ -33,7 +33,7 @@ TEXT_STATUS = {
 
 
 def print_with_status(text: str, status: str):
-    assert status in TEXT_STATUS.keys()
+    assert status in TEXT_STATUS
     print_formatted_text(HTML(f"<{TEXT_STATUS[status]}>{text}</{TEXT_STATUS[status]}>"))
 
 
@@ -64,14 +64,14 @@ def main(args):
                                      success_logger=success_printer)
         iter_init = controller.iterative_initializer()
         first = True
-        with ProgressBar(title="Initialisation des modules") as pb:
-            pb.title = f"Initialisation :"
-            for _ in pb(range(module_manager.nb_modules), label="Initialisation"):
+        with ProgressBar(title="Initialisation des modules") as progress_bar:
+            progress_bar.title = "Initialisation :"
+            for _ in progress_bar(range(module_manager.nb_modules), label="Initialisation"):
                 if not first:
-                    pb.title += " ** "
+                    progress_bar.title += " ** "
                 else:
                     first = False
-                pb.title += f" {next(iter_init)}"
+                progress_bar.title += f" {next(iter_init)}"
     else:
         controller = InputController(data_service=data_service, output_handler=output_handler,
                                      error_logger=logger.error, info_logger=logger.info, success_logger=logger.info)
@@ -86,7 +86,7 @@ def main(args):
 def user_input_loop(controller: InputController):
     try:
         while 1:
-            answer = prompt(f"A pour acronyme, R pour id rnsr, Q pour quitter =, valeur > ")
+            answer = prompt("A pour acronyme, R pour id rnsr, Q pour quitter =, valeur > ")
             try:
                 controller.handle(user_input=answer, entity_type="structure")
             except ValueError:

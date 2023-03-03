@@ -37,13 +37,13 @@ class ModuleManager:
         def __next__(self):
             filename = next(self.file_iterator)
             f = os.path.join(self.manager.conf_dir, filename)
-            with open(f) as yaml_file:
+            with open(f, "rb", encoding="utf-8") as yaml_file:
                 self.success_log_fn(f"\u2192 Fichier d'initialisation découvert : {f}")
                 data = yaml.load(yaml_file, Loader=SafeLoader)
                 module = ModuleFactory.build(data['module'])
-                self.manager.modules[module.id] = module
-                self.success_log_fn(f"      \uFF0A Module : {module.id} initialisé avec succès")
-                return module.id
+                self.manager.modules[module.identifier] = module
+                self.success_log_fn(f"      \uFF0A Module : {module.identifier} initialisé avec succès")
+                return module.identifier
 
     def init_iterator(self, success_log_fn: Callable, error_log_fn: Callable):
         """Discovers module configurations and instantiate modules
@@ -52,3 +52,5 @@ class ModuleManager:
         return ModuleManager.ModuleInitIterator(self, success_log_fn=success_log_fn, error_log_fn=error_log_fn)
 
     # yield counter
+    def has_module(self, source: str) -> bool:
+        pass

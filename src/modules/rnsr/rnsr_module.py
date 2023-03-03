@@ -3,30 +3,30 @@ import time
 from typing import Iterator
 
 import selenium
-
-from app.module_mgmt.module import Module
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from bleach.sanitizer import Cleaner
 
+from app.module_mgmt.module import Module
+
 SEARCH_FORM_URL = 'https://appliweb.dgri.education.fr/rnsr/ChoixCriteres.jsp?PUBLIC=OK'
 
 
-class Module(Module):
+class RnsrModule(Module):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cleaner = cleaner = Cleaner(tags=[], attributes={}, protocols=[], strip=True, strip_comments=True,
-                                         filters=None)
+        self.cleaner = Cleaner(tags=[], attributes={}, protocols=[], strip=True, strip_comments=True,
+                               filters=None)
 
     def values_for(self, entity_type: str, field: str) -> Iterator[str]:
         pass
 
-    rnsr_directors_regex = re.compile('^\s*Directeur - (.+) à partir du .+ \( (.+@.+) \)<br>\s*$')
-    rnsr_title_regex = re.compile('^([A-Z0-9]+)\s*:\s*(.+)$')
-    rnsr_intitule_regex = re.compile('^\s*([A-Z0-9a-z]+\s)?([A-Z].+)\s*$')
+    rnsr_directors_regex = re.compile(r'^\s*Directeur - (.+) à partir du .+ \( (.+@.+) \)<br>\s*$')
+    rnsr_title_regex = re.compile(r'^([A-Z0-9]+)\s*:\s*(.+)$')
+    rnsr_intitule_regex = re.compile(r'^\s*([A-Z0-9a-z]+\s)?([A-Z].+)\s*$')
 
     def entity(self, entity_type: str, field: str, value: str) -> object:
         assert field in ['acronym', 'code', 'number', 'title']
@@ -63,7 +63,7 @@ class Module(Module):
             address = re.sub(r'(\s+|&nbsp;)', ' ', raw)
         except selenium.common.exceptions.NoSuchElementException:
             address = None
-            print(f"Adresse non trouvée RNSR")
+            print("Adresse non trouvée RNSR")
         return address
 
     def _extract_directors(self, driver):
@@ -72,22 +72,22 @@ class Module(Module):
                                                 '//h2[text()[normalize-space() = "Responsable(s)"]]/..').get_attribute(
                 'innerHTML')
             lines = list(map(lambda s: s.replace('\t', ''), raw_directors.splitlines()))
-            values = list(map(lambda s: self.rnsr_directors_regex.match(s), lines))
-            not_None = (el for el in values if el is not None)
-            value = next(not_None, None)
+            values = list(map(self.rnsr_directors_regex.match, lines))
+            not_none = (el for el in values if el is not None)
+            value = next(not_none, None)
             director = None if value is None else value.group(1)
             director_email = None if value is None else value.group(2)
         except selenium.common.exceptions.NoSuchElementException:
             director = None
             director_email = None
-            print(f"{Fore.RED}Responsables non trouvés RNSR")
+            print("Responsables non trouvés RNSR")
         return director, director_email
 
     def _extract_title_and_identifiers(self, acronym, driver):
         try:
             title = driver.find_element(By.XPATH, '//h2').text.split('\n')[0]
         except selenium.common.exceptions.NoSuchElementException:
-            print(f"## Non trouvé RNSR ")
+            print("## Non trouvé RNSR ")
         match_title = self.rnsr_title_regex.match(title)
         num = None if match_title is None else match_title.group(1)
         name = None if match_title is None else match_title.group(2)
@@ -108,7 +108,7 @@ class Module(Module):
         driver.execute_script("arguments[0].click();", button)
 
     def _get_web_driver(self):
-        op = webdriver.ChromeOptions()
-        op.add_argument('headless')
-        driver = webdriver.Chrome(options=op)
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        driver = webdriver.Chrome(options=options)
         return driver
