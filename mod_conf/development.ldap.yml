@@ -1,0 +1,5 @@
+module:
+  id: ldap
+  name: Annuaire LDAP
+  config:
+    url: ldap://localhost:8888

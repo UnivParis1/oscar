@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 import modules.dummy.dummy_module
@@ -25,3 +27,13 @@ class TestModuleManager:
             it = module_manager.init_iterator(error_log_fn=print, success_log_fn=print)
             for _ in it:
                 pass
+
+    def test_module_config_override(self):
+        with patch.object(ModuleManager, '_get_environment',
+                          return_value='production'):
+            module_manager = ModuleManager(conf_dir="conf/tests_env_override_mod_conf")
+            it = module_manager.init_iterator(error_log_fn=print, success_log_fn=print)
+            for _ in it:
+                pass
+            assert module_manager.modules['ldap'].config[
+                       'url'] == "ldap://production.url", "URL should be overriden by value 'ldap://production.url'"
