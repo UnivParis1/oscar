@@ -44,8 +44,8 @@ apt-get install build-essential python3-dev python2.7-dev libldap2-dev libsasl2-
 
 Pour customiser les paramètres des modules, créez un fichier yml dédié à votre environnement. Par exemple, pour customiser les paramètres du module "Ldap" en environnement "production" :
 ```shell
-cp mod_conf/ldap.yml mod_conf/production_ldap.yml
-vim mod_conf/production_ldap.yml
+cp mod_conf/ldap.yml mod_conf/production.ldap.yml
+vim mod_conf/production.ldap.yml
 ```
 La configuration de base (ici `mod_conf/ldap.yml`) sera alors ignorée.
 
