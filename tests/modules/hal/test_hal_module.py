@@ -14,7 +14,7 @@ class TestHalModule:
         with patch.object(HalModule, '_get_hal_research_structures',
                           return_value=self._hal_data_file("default.json")):
             entity = hal_module.entity("structure", "acronym", "CRI")
-            assert entity.title == 'Centre de Recherche en Informatique de Paris 1', "Entity title is 'LCentre de Recherche en Informatique de Paris 1'"
+            assert entity.title == 'Centre de Recherche en Informatique de Paris 1', "Entity title is 'Centre de Recherche en Informatique de Paris 1'"
 
     def test_cri_rnsr_id(self):
         hal_module = self._init_hal_module()

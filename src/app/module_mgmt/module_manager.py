@@ -1,4 +1,5 @@
 import os
+import re
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -16,7 +17,14 @@ class ModuleManager:
     files: [str] = field(default_factory=list)
 
     def __post_init__(self):
-        self.files = os.listdir(self.conf_dir)
+        environment = self._get_environment()
+        yml_files = [f for f in os.listdir(self.conf_dir) if re.match(r'.+\.yml', f)]
+        self.files = [f for f in yml_files if f"{environment}.{f}" not in yml_files]
+
+    @staticmethod
+    def _get_environment():
+        environment = os.getenv('ENV') or 'development'
+        return environment
 
     @property
     def nb_modules(self):

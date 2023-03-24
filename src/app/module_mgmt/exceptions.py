@@ -4,3 +4,7 @@ class EntityNotFoundError(Exception):
 
 class DuplicateEntitiesError(Exception):
     pass
+
+
+class ConnectionFailureError(ConnectionError):
+    pass
