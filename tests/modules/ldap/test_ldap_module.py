@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from app.module_mgmt.exceptions import ConnectionFailureError
+from app.module_mgmt.exceptions import ConnectionFailureError, NotSupportedRequestError
 from app.module_mgmt.module_manager import ModuleManager
 from modules.ldap.ldap_module import LdapModule
 
@@ -41,6 +41,12 @@ class TestLdapModule:
                           return_value=self._cri_row()):
             entity = ldap_module.entity("structure", "acronym", "CRI")
             assert entity.url == 'http://crinfo.univ-paris1.fr', "Entity website URL is 'http://crinfo.univ-paris1.fr'"
+            
+
+    def test_query_ldap_by_code_not_supported(self):
+        ldap_module = self._init_ldap_module(conf_dir="conf/test_ldap_module_wrong_conf")
+        with pytest.raises(NotSupportedRequestError):
+            ldap_module.entity("structure", "code", "12345")
 
     @staticmethod
     def _cri_row() -> list[tuple]:

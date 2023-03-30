@@ -4,7 +4,8 @@ from typing import Iterator
 import ldap
 from prompt_toolkit import print_formatted_text, HTML
 
-from app.module_mgmt.exceptions import EntityNotFoundError, DuplicateEntitiesError, ConnectionFailureError
+from app.module_mgmt.exceptions import EntityNotFoundError, DuplicateEntitiesError, ConnectionFailureError, \
+    NotSupportedRequestError
 from app.module_mgmt.module import Module
 
 
@@ -25,6 +26,8 @@ class LdapModule(Module):
 
     def entity(self, entity_type: str, field: str, value: str) -> object:
         assert field in ['acronym', 'code', 'number', 'title']
+        if field == "code":
+            raise NotSupportedRequestError("L'annuaire LDAP ne peut pas encode être requêté par code RNSR.")
         entity = super().entity(entity_type=entity_type, field=field, value=value)
         ldap_response = self._get_ldap_research_structure(field, value)
         num_results = len(ldap_response)
@@ -66,12 +69,14 @@ class LdapModule(Module):
         return entity
 
     def _get_ldap_research_structure(self, field, value):
+        query = None
         if field == 'acronym':
             query = f"ou=*{value}"
         elif field == 'number':
             query = f"supannRefId=*{value.replace(' ', '')}"
         elif field == 'title':
             query = f"description=*{value}*"
+        assert query is not None, f"Ldap request failure : unauthorized field {field}"
         try:
             ldap_response = self.connexion.search_s(LdapModule.STRUCTURE_BRANCH,
                                                     ldap.SCOPE_SUBTREE,
