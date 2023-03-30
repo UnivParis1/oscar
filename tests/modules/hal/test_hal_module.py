@@ -29,6 +29,7 @@ class TestHalModule:
                           return_value=self._hal_data_file("default.json")):
             entity = hal_module.entity("structure", "acronym", "CRI")
             assert entity.number == 'EA1445', "Entity number is 'EA1445'"
+
     def test_cri_address(self):
         hal_module = self._init_hal_module()
         with patch.object(HalModule, '_get_hal_research_structures',
@@ -42,6 +43,13 @@ class TestHalModule:
                           return_value=self._hal_data_file("default.json")):
             entity = hal_module.entity("structure", "acronym", "CRI")
             assert entity.url == 'https://cri.pantheonsorbonne.fr/', "Entity website URL is 'https://cri.pantheonsorbonne.fr/'"
+
+    def test_title_by_code(self):
+        hal_module = self._init_hal_module()
+        with patch.object(HalModule, '_get_hal_research_structures',
+                          return_value=self._hal_data_file("default.json")):
+            entity = hal_module.entity("structure", "number", "UR4100")
+            assert entity.title == "Histoire culturelle et sociale de l'art", "Entity title is 'Histoire culturelle et sociale de l\'art'"
 
     def _hal_data_file(self, name):
         file_location = f"file://{Path('fixtures/hal/' + name).resolve()}"

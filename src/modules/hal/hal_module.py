@@ -40,10 +40,14 @@ class HalModule(Module):
     def entity(self, entity_type: str, field: str, value: str) -> object:
         assert field in ['acronym', 'code', 'number', 'title']
         entity = super().entity(entity_type=entity_type, field=field, value=value)
+        hal_field_name = None
         if field == 'acronym':
             hal_field_name = "acronym_s"
         elif field == 'code':
             hal_field_name = "rnsr_s"
+        elif field == 'number':
+            hal_field_name = "code_s"
+        assert hal_field_name is not None, f"Ldap request failure : unauthorized field {field}"
         data = self._extract_by_field("HAL", hal_field_name, value)
         for key in data.index:
             if key not in self.CONVERSION_TABLE:
@@ -70,6 +74,4 @@ class HalModule(Module):
         if filtered_data.shape[0] > 1:
             acronyms = ", ".join(filtered_data[column])
             raise DuplicateEntitiesError(f"Résultats multiples {origin} : {acronyms}")
-        else:
-            result_row = filtered_data.iloc(0)[0]
-        return result_row
+        return  filtered_data.iloc(0)[0]

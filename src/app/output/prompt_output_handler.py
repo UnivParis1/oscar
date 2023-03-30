@@ -13,12 +13,13 @@ class PromptOutputHandler(OutputHandler):
         assert self.base_class is not None, "Configure output with 'set_mode' before sending entities"
         entities = {}
         with ProgressBar(title="Interrogation des sources") as pb:
-            for _ in pb(range(self.expected_modules_count), label="Initialisation"):
+            for _ in pb(range(self.expected_modules_count), label="Interrogation des sources"):
                 source = next(entities_gen)
-                pb.title = source.source
+                pb.title = f"Interrogation en cours {source.source}"
                 entities[source.source] = source
                 if self._error_entity(source):
                     print_formatted_text(HTML(f"<b><red>Source : {source.source} Erreur : {source.message}</red></b>"))
+            pb.title = "Interrogation des sources terminée"
         for search_field in dataclasses.fields(self.base_class):
             if search_field.name in ['source']:
                 continue
