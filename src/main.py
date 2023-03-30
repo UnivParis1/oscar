@@ -1,16 +1,21 @@
 # This is a sample Python script.
 import argparse
 import logging
+import os
 
-from prompt_toolkit import prompt, print_formatted_text, HTML
+from prompt_toolkit import print_formatted_text, HTML, PromptSession
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import ProgressBar
 
 from app.data.data_service import DataService
+from app.input_controller import InputController
 from app.log_handler import LogHandler
 from app.module_mgmt.module_manager import ModuleManager
-from app.output.prompt_output_handler import PromptOutputHandler
-from app.input_controller import InputController
 from app.output.excel_output_handler import ExcelOutputHandler
+from app.output.prompt_output_handler import PromptOutputHandler
+
+HISTORY_FILE = '.oscar_history'
 
 DEFAULT_CONFIG_DIR_NAME = "mod_conf"
 
@@ -84,9 +89,18 @@ def main(args):
 
 
 def user_input_loop(controller: InputController):
+    file = f"{os.path.expanduser('~')}/{HISTORY_FILE}"
+    with open(file, 'a', encoding='utf-8') as _:
+        pass
+    session = PromptSession(history=FileHistory(file))
+    toolbar = HTML(
+        '<b><style bg="ansired">A</style></b> pour acronyme, <b><style bg="ansired">N</style></b> pour numéro, <b><style bg="ansired">C</style></b> pour id rnsr, <b><style bg="ansired">T</style></b> pour intitulé <b><style bg="ansired">=</style></b> valeur | <b><style bg="ansired">Q</style></b> pour quitter')
     try:
         while 1:
-            answer = prompt("A pour acronyme, N pour numéro, C pour id rnsr, T pour intitulé, Q pour quitter =, valeur > ")
+            answer = session.prompt(
+                ">",
+                auto_suggest=AutoSuggestFromHistory(),
+                bottom_toolbar=toolbar)
             try:
                 controller.handle(user_input=answer, entity_type="structure")
             except ValueError:

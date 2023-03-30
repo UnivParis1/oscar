@@ -27,7 +27,7 @@ class LdapModule(Module):
     def entity(self, entity_type: str, field: str, value: str) -> object:
         assert field in ['acronym', 'code', 'number', 'title']
         if field == "code":
-            raise NotSupportedRequestError("L'annuaire LDAP ne peut pas encode être requêté par code RNSR.")
+            raise NotSupportedRequestError("L'annuaire LDAP : pas de code RNSR.")
         entity = super().entity(entity_type=entity_type, field=field, value=value)
         ldap_response = self._get_ldap_research_structure(field, value)
         num_results = len(ldap_response)
