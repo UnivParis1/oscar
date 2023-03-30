@@ -86,7 +86,7 @@ def main(args):
 def user_input_loop(controller: InputController):
     try:
         while 1:
-            answer = prompt("A pour acronyme, R pour id rnsr, Q pour quitter =, valeur > ")
+            answer = prompt("A pour acronyme, N pour numéro, C pour id rnsr, T pour intitulé, Q pour quitter =, valeur > ")
             try:
                 controller.handle(user_input=answer, entity_type="structure")
             except ValueError:

@@ -8,3 +8,6 @@ class DuplicateEntitiesError(Exception):
 
 class ConnectionFailureError(ConnectionError):
     pass
+
+class NotSupportedRequestError(Exception):
+    pass
