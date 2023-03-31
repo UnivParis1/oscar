@@ -1,4 +1,5 @@
 .idea
+.coverage
 log
 venv
 __pycache__
