@@ -23,6 +23,7 @@ class RnsrModule(Module):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         assert 'search_form_url' in self.config
+        assert 'university_filter_label' in self.config
         self.cleaner = Cleaner(tags=[], attributes={}, protocols=[], strip=True, strip_comments=True,
                                filters=None)
 
@@ -125,7 +126,7 @@ class RnsrModule(Module):
 
     def _select_univ_filter(self, driver, attempt=0):
         etab_select = Select(driver.find_element(By.XPATH, '//select[@name="CLE_ETABLISSEMENT"]'))
-        etab_name = "Paris 1 - Université Panthéon-Sorbonne Paris 1"
+        etab_name = self.config['university_filter_label']
         all_options = etab_select.options
         selected_options: list[WebElement] = list(filter(lambda o: o.text == etab_name, all_options))
         assert attempt < 3 or len(selected_options) > 0, \

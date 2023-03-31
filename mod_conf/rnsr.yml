@@ -3,3 +3,5 @@ module:
   name: Répertoire national des structures de recherche
   config:
     search_form_url: 'https://appliweb.dgri.education.fr/rnsr/ChoixCriteres.jsp?PUBLIC=OK'
+    #Nom de l'établissement dans le menu établissement 1 de https://appliweb.dgri.education.fr/rnsr/ChoixCriteres.jsp
+    university_filter_label: "Paris 1 - Université Panthéon-Sorbonne Paris 1"
