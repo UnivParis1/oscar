@@ -65,15 +65,14 @@ class HalModule(Module):
     def _extract_by_field(self, origin, column, value):
         filtered_data = pd.DataFrame.copy(self.aurehal_data)
         datatype = type(filtered_data[column].dropna().values[0])
-        value = value.replace('*', '.*')
         if datatype == list:
             filtered_data = filtered_data.loc[
-                filtered_data[column].str.join(' ').str.contains(f"^{value}$", regex=True, na=False)]
+                filtered_data[column].str.join(' ').str.contains(f"^.*{value}.*$", regex=True, na=False)]
         else:
             filtered_data = filtered_data.loc[
-                filtered_data[column].str.contains(f"^{value}$", regex=True, na=False, flags=re.IGNORECASE)]
+                filtered_data[column].str.contains(f"^.*{value}.*$", regex=True, na=False, flags=re.IGNORECASE)]
         if filtered_data.shape[0] == 0:
-            raise EntityNotFoundError("Non trouvé {origin} : {value}")
+            raise EntityNotFoundError(f"Non trouvé {origin} : {value}")
         if filtered_data.shape[0] > 1:
             values = ", ".join(filtered_data[column])
             raise DuplicateEntitiesError(f"Résultats multiples {origin} : {values}")
