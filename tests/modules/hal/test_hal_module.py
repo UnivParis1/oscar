@@ -65,6 +65,13 @@ class TestHalModule:
             entity = hal_module.entity("structure", "title", "*médiévistique*")
             assert entity.acronym == "LAMOP", "Entity acronym should be 'LAMOP'"
 
+    def test_code_by_acronym_pattern(self):
+        hal_module = self._init_hal_module()
+        with patch.object(HalModule, '_get_hal_research_structures',
+                          return_value=self._hal_data_file("default.json")):
+            entity = hal_module.entity("structure", "acronym", "*IREST")
+            assert entity.rnsr_id == '201420809M', "Entity RNSR id should be '201420809M'"
+
     def _hal_data_file(self, name):
         file_location = f"file://{Path('fixtures/hal/' + name).resolve()}"
         file_path = Path(file_location)
