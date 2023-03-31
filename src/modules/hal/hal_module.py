@@ -47,7 +47,9 @@ class HalModule(Module):
             hal_field_name = "rnsr_s"
         elif field == 'number':
             hal_field_name = "code_s"
-        assert hal_field_name is not None, f"Ldap request failure : unauthorized field {field}"
+        elif field == 'title':
+            hal_field_name = "name_s"
+        assert hal_field_name is not None, f"Hal data request failure : unauthorized field {field}"
         data = self._extract_by_field("HAL", hal_field_name, value)
         for key in data.index:
             if key not in self.CONVERSION_TABLE:
@@ -60,18 +62,19 @@ class HalModule(Module):
         json_data = requests.get(self.HAL_QUERY, timeout=self.HAL_QUERY_TIMEOUT).json()
         return pd.DataFrame(json_data['response']['docs'])
 
-    def _extract_by_field(self, origin, column, acronym):
+    def _extract_by_field(self, origin, column, value):
         filtered_data = pd.DataFrame.copy(self.aurehal_data)
         datatype = type(filtered_data[column].dropna().values[0])
+        value = value.replace('*', '.*')
         if datatype == list:
             filtered_data = filtered_data.loc[
-                filtered_data[column].str.join(' ').str.contains(f"^{acronym}$", regex=True, na=False)]
+                filtered_data[column].str.join(' ').str.contains(f"^{value}$", regex=True, na=False)]
         else:
             filtered_data = filtered_data.loc[
-                filtered_data[column].str.contains(f"^{acronym}$", regex=True, na=False, flags=re.IGNORECASE)]
+                filtered_data[column].str.contains(f"^{value}$", regex=True, na=False, flags=re.IGNORECASE)]
         if filtered_data.shape[0] == 0:
-            raise EntityNotFoundError("Non trouvé {origin} : {acronym}")
+            raise EntityNotFoundError("Non trouvé {origin} : {value}")
         if filtered_data.shape[0] > 1:
-            acronyms = ", ".join(filtered_data[column])
-            raise DuplicateEntitiesError(f"Résultats multiples {origin} : {acronyms}")
-        return  filtered_data.iloc(0)[0]
+            values = ", ".join(filtered_data[column])
+            raise DuplicateEntitiesError(f"Résultats multiples {origin} : {values}")
+        return filtered_data.iloc(0)[0]
