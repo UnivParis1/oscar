@@ -86,7 +86,8 @@ Déployé sur un serveur de l'université, OSCAR peut s'exécuter :
 python src/main.py --manual
 ```
 ```
-$ python src/main.py --manual
+oscar@oscar:~/oscar$ source venv/bin/activate
+(venv) oscar@oscar:~/oscar$ python3 src/main.py --manual
 → Fichier d'initialisation découvert : mod_conf/hal.yml
       ＊ Module : hal initialisé avec succès
 → Fichier d'initialisation découvert : mod_conf/rnsr.yml
@@ -94,11 +95,11 @@ $ python src/main.py --manual
 → Fichier d'initialisation découvert : mod_conf/production.ldap.yml
       ＊ Module : ldap initialisé avec succès
 Initialisation : hal **  rnsr **  ldap
-Initialisation 100.0% [=====================================================================================================================================================================>]   3/  3 eta [00:00]
-A pour acronyme, R pour id rnsr, Q pour quitter =, valeur > A=LAMOP
-⚙ Contrôle d'alignement d'entité : critère [acronym]=[LAMOP]
-ldap
-Initialisation 100.0% [=====================================================================================================================================================================>]   3/  3 eta [00:00]
+Initialisation 100.0% [==================================>]   3/  3 eta [00:00]
+>T=médiévistique
+⚙ Contrôle d'alignement d'entité : critère [title]=[médiévistique]
+Interrogation des sources terminée
+Interrogation des sources 100.0% [=====================================================================================================================================================================================>]   3/  3 eta [00:00]
 Champ : Directeur-directrice
 hal : None
 rnsr : None
@@ -109,7 +110,7 @@ rnsr : None
 ldap : None
 Champ : Nom
 hal : Laboratoire de Médiévistique Occidentale de Paris
-rnsr : Laboratoire de Médiévistique Occidentale de Paris 
+rnsr : Laboratoire de médiévistique occidentale de Paris 
 ldap : Laboratoire de médiévistique occidentale de Paris
 Champ : Acronym
 hal : LAMOP
@@ -134,7 +135,8 @@ Champ : Numéro
 hal : UMR8589
 rnsr : None
 ldap : UMR 8589
-A pour acronyme, R pour id rnsr, Q pour quitter =, valeur >
+>
+A pour acronyme, N pour numéro, C pour id rnsr, T pour intitulé = valeur | Q pour quitter                                                                                                                                                     
  
 ```
 
