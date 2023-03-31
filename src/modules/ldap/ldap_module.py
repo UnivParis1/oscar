@@ -83,4 +83,6 @@ class LdapModule(Module):
                                                     query)
         except ldap.SERVER_DOWN as error:
             raise ConnectionFailureError("Connexion au LDAP impossible") from error
+        except ldap.SIZELIMIT_EXCEEDED:
+            raise DuplicateEntitiesError("Réponses LDAP en nombre excessif")
         return ldap_response
